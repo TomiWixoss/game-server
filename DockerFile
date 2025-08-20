@@ -1,0 +1,23 @@
+# Sử dụng một Node.js image gọn nhẹ và ổn định
+FROM node:18-alpine
+
+# Đặt thư mục làm việc bên trong container
+WORKDIR /usr/src/app
+
+# Sao chép package.json và package-lock.json trước
+COPY package*.json ./
+
+# Cài đặt CHỈ các dependencies cần cho production.
+# --omit=dev là cách làm hiện đại, nó sẽ bỏ qua devDependencies.
+# Điều này an toàn vì chúng ta đã chuyển typescript sang dependencies.
+RUN npm install --omit=dev
+
+# Sao chép toàn bộ mã nguồn còn lại
+COPY . .
+
+# Biên dịch mã TypeScript thành JavaScript
+# Lệnh này sẽ hoạt động vì typescript đã được cài ở bước trên.
+RUN npm run build
+
+# Lệnh để chạy ứng dụng sau khi build xong
+CMD ["npm", "start"]
